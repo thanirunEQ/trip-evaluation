@@ -5,115 +5,271 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แบบประเมินความพึงพอใจกิจกรรมทัศนศึกษา</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #f8f9fa; font-family: 'Sarabun', sans-serif; }
-    .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .rating-table th, .rating-table td { text-align: center; vertical-align: middle; }
+    body {
+      background: linear-gradient(rgba(240, 249, 255, 0.75), rgba(253, 242, 248, 0.75)),
+                  url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1920&q=80') center/cover fixed no-repeat;
+      font-family: 'Kanit', sans-serif;
+      min-height: 100vh;
+      color: #334155;
+    }
+
+    .form-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+    }
+    
+    .header-box {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 2.2rem 1.5rem;
+      box-shadow: 0 12px 25px -5px rgba(37, 99, 235, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header-box::before {
+      content: '🔬 🚀 🧪';
+      position: absolute;
+      right: -10px;
+      bottom: -10px;
+      font-size: 3.5rem;
+      opacity: 0.2;
+      transform: rotate(-15deg);
+    }
+
+    .badge-dashboard {
+      background: rgba(255, 255, 255, 0.22);
+      color: white;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 6px 18px;
+      border-radius: 50px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .badge-dashboard:hover {
+      background: rgba(255, 255, 255, 0.4);
+      color: white;
+    }
+    
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .star-rating input {
+      display: none;
+    }
+    .star-rating label {
+      font-size: 2.3rem;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: color 0.2s ease, transform 0.1s ease;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+      color: #fbbf24;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+    }
+    .star-rating label:hover,
+    .star-rating label:active {
+      transform: scale(1.2);
+    }
+    
+    .question-box {
+      background-color: rgba(248, 250, 252, 0.85);
+      border-radius: 16px;
+      padding: 1.2rem;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .btn-submit {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 1.25rem;
+      font-weight: 500;
+      box-shadow: 0 8px 20px -3px rgba(16, 185, 129, 0.4);
+      transition: all 0.2s ease;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px -3px rgba(16, 185, 129, 0.5);
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    .btn-option {
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 22px;
+      cursor: pointer;
+      transition: 0.2s;
+      background: white;
+    }
+    .btn-check:checked + .btn-option {
+      border-color: #0284c7;
+      background-color: #e0f2fe;
+      color: #0369a1;
+      font-weight: 500;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
+    }
   </style>
 </head>
-<body>
-  <div class="container py-5">
+<body class="py-4 py-md-5">
+
+  <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card p-4 mb-4 border-top border-primary border-4">
-          <h2 class="text-primary fw-bold">แบบประเมินความพึงพอใจกิจกรรมทัศนศึกษา</h2>
-          <p class="text-muted">กรุณาตอบแบบสอบถามตามความเป็นจริงเพื่อนำข้อมูลไปปรับปรุงการจัดกิจกรรมในครั้งถัดไป</p>
-          <a href="dashboard.html" class="btn btn-outline-secondary btn-sm me-auto">📊 ไปที่หน้า Dashboard สรุปผล</a>
+      <div class="col-lg-8 col-md-10">
+        
+        <!-- Header -->
+        <div class="header-box text-center mb-4">
+          <h2 class="fw-bold mb-2">🚀 ทัศนศึกษาตะลุยโลกวิทยาศาสตร์ 🔬</h2>
+          <p class="mb-3 opacity-90">ช่วยบอกความรู้สึกของคุณ เพื่อให้เราจัดกิจกรรมได้สนุกยิ่งขึ้นในครั้งหน้า!</p>
+          <button type="button" class="badge-dashboard d-inline-block border-0" data-bs-toggle="modal" data-bs-target="#pinModal">
+            🔒 ดูหน้าสรุปผล Dashboard
+          </button>
         </div>
 
         <form id="evalForm">
-          <!-- ข้อมูลส่วนตัว -->
-          <div class="card p-4 mb-4">
-            <h5 class="fw-bold mb-3">ส่วนที่ 1: ข้อมูลส่วนตัว</h5>
-            <div class="mb-3">
-              <label class="form-label">ช่วงอายุ <span class="text-danger">*</span></label>
-              <select class="form-select" name="age" required>
-                <option value="">-- เลือกช่วงอายุ --</option>
-                <option value="ต่ำกว่า 15 ปี">ต่ำกว่า 15 ปี</option>
-                <option value="15 ปีขึ้นไป">15 ปีขึ้นไป</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label d-block">เพศ <span class="text-danger">*</span></label>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="gender" value="ชาย" required>
-                <label class="form-check-label">ชาย</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="gender" value="หญิง">
-                <label class="form-check-label">หญิง</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="gender" value="ไม่ระบุ">
-                <label class="form-check-label">ไม่ระบุ</label>
+          
+          <!-- ส่วนที่ 1: ข้อมูลส่วนตัว -->
+          <div class="form-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-primary">👤 ส่วนที่ 1: ข้อมูลทั่วไป</h5>
+            
+            <div class="mb-4">
+              <label class="form-label fw-bold">ช่วงอายุ <span class="text-danger">*</span></label>
+              <div class="d-flex gap-3 flex-wrap">
+                <div>
+                  <input type="radio" class="btn-check" name="age" id="age1" value="ต่ำกว่า 15 ปี" required>
+                  <label class="btn-option" for="age1">👶 ต่ำกว่า 15 ปี</label>
+                </div>
+                <div>
+                  <input type="radio" class="btn-check" name="age" id="age2" value="15 ปี ขึ้นไป">
+                  <label class="btn-option" for="age2">🧑 15 ปี ขึ้นไป</label>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Rating Scale -->
-          <div class="card p-4 mb-4">
-            <h5 class="fw-bold mb-3">ส่วนที่ 2: ความพึงพอใจต่อกิจกรรม (5 = มากที่สุด, 1 = น้อยที่สุด)</h5>
-            <div class="table-responsive">
-              <table class="table table-bordered rating-table">
-                <thead class="table-light">
-                  <tr>
-                    <th style="width: 55%; text-align: left;">ประเด็นการประเมิน</th>
-                    <th>5</th><th>4</th><th>3</th><th>2</th><th>1</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="text-start">1. ความเหมาะสมของสถานที่และระยะเวลา</td>
-                    <td><input type="radio" name="q1" value="5" required></td>
-                    <td><input type="radio" name="q1" value="4"></td>
-                    <td><input type="radio" name="q1" value="3"></td>
-                    <td><input type="radio" name="q1" value="2"></td>
-                    <td><input type="radio" name="q1" value="1"></td>
-                  </tr>
-                  <tr>
-                    <td class="text-start">2. ความรู้และประโยชน์ที่ได้รับจากกิจกรรม</td>
-                    <td><input type="radio" name="q2" value="5" required></td>
-                    <td><input type="radio" name="q2" value="4"></td>
-                    <td><input type="radio" name="q2" value="3"></td>
-                    <td><input type="radio" name="q2" value="2"></td>
-                    <td><input type="radio" name="q2" value="1"></td>
-                  </tr>
-                  <tr>
-                    <td class="text-start">3. อาหาร เครื่องดื่ม และสิ่งอำนวยความสะดวก</td>
-                    <td><input type="radio" name="q3" value="5" required></td>
-                    <td><input type="radio" name="q3" value="4"></td>
-                    <td><input type="radio" name="q3" value="3"></td>
-                    <td><input type="radio" name="q3" value="2"></td>
-                    <td><input type="radio" name="q3" value="1"></td>
-                  </tr>
-                  <tr>
-                    <td class="text-start">4. การดูแลและความปลอดภัยของทีมงาน</td>
-                    <td><input type="radio" name="q4" value="5" required></td>
-                    <td><input type="radio" name="q4" value="4"></td>
-                    <td><input type="radio" name="q4" value="3"></td>
-                    <td><input type="radio" name="q4" value="2"></td>
-                    <td><input type="radio" name="q4" value="1"></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div>
+              <label class="form-label fw-bold">เพศ <span class="text-danger">*</span></label>
+              <div class="d-flex gap-3 flex-wrap">
+                <div>
+                  <input type="radio" class="btn-check" name="gender" id="g1" value="ชาย" required>
+                  <label class="btn-option" for="g1">👦 ชาย</label>
+                </div>
+                <div>
+                  <input type="radio" class="btn-check" name="gender" id="g2" value="หญิง">
+                  <label class="btn-option" for="g2">👧 หญิง</label>
+                </div>
+                <div>
+                  <input type="radio" class="btn-check" name="gender" id="g3" value="ไม่ระบุ">
+                  <label class="btn-option" for="g3">✨ ไม่ระบุ</label>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- ข้อเสนอแนะ -->
-          <div class="card p-4 mb-4">
-            <h5 class="fw-bold mb-3">ส่วนที่ 3: ข้อเสนอแนะเพิ่มเติม</h5>
-            <textarea class="form-control" name="suggestions" rows="3" placeholder="ข้อเสนอแนะสำหรับการจัดกิจกรรมครั้งต่อไป..."></textarea>
+          <!-- ส่วนที่ 2: ให้ดาว Rating Scale -->
+          <div class="form-card p-4 mb-4">
+            <h5 class="fw-bold mb-2 text-primary">⭐ ส่วนที่ 2: ความพึงพอใจต่อกิจกรรม</h5>
+            <p class="text-muted small mb-4">แตะที่ดาวเพื่อระบุคะแนน (5 ดาว = ชอบมากที่สุด, 1 ดาว = ควรปรับปรุง)</p>
+
+            <!-- ข้อ 1 -->
+            <div class="question-box mb-3">
+              <label class="fw-bold d-block mb-2">1. ความเหมาะสมของสถานที่และระยะเวลา 🎡</label>
+              <div class="star-rating">
+                <input type="radio" id="q1-5" name="q1" value="5" required/><label for="q1-5" title="5 ดาว">★</label>
+                <input type="radio" id="q1-4" name="q1" value="4"/><label for="q1-4" title="4 ดาว">★</label>
+                <input type="radio" id="q1-3" name="q1" value="3"/><label for="q1-3" title="3 ดาว">★</label>
+                <input type="radio" id="q1-2" name="q1" value="2"/><label for="q1-2" title="2 ดาว">★</label>
+                <input type="radio" id="q1-1" name="q1" value="1"/><label for="q1-1" title="1 ดาว">★</label>
+              </div>
+            </div>
+
+            <!-- ข้อ 2 -->
+            <div class="question-box mb-3">
+              <label class="fw-bold d-block mb-2">2. ความรู้และประโยชน์ที่ได้รับ 🧠</label>
+              <div class="star-rating">
+                <input type="radio" id="q2-5" name="q2" value="5" required/><label for="q2-5" title="5 ดาว">★</label>
+                <input type="radio" id="q2-4" name="q2" value="4"/><label for="q2-4" title="4 ดาว">★</label>
+                <input type="radio" id="q2-3" name="q2" value="3"/><label for="q2-3" title="3 ดาว">★</label>
+                <input type="radio" id="q2-2" name="q2" value="2"/><label for="q2-2" title="2 ดาว">★</label>
+                <input type="radio" id="q2-1" name="q2" value="1"/><label for="q2-1" title="1 ดาว">★</label>
+              </div>
+            </div>
+
+            <!-- ข้อ 3 -->
+            <div class="question-box mb-3">
+              <label class="fw-bold d-block mb-2">3. อาหาร เครื่องดื่ม และสิ่งอำนวยความสะดวก 🍱</label>
+              <div class="star-rating">
+                <input type="radio" id="q3-5" name="q3" value="5" required/><label for="q3-5" title="5 ดาว">★</label>
+                <input type="radio" id="q3-4" name="q3" value="4"/><label for="q3-4" title="4 ดาว">★</label>
+                <input type="radio" id="q3-3" name="q3" value="3"/><label for="q3-3" title="3 ดาว">★</label>
+                <input type="radio" id="q3-2" name="q3" value="2"/><label for="q3-2" title="2 ดาว">★</label>
+                <input type="radio" id="q3-1" name="q3" value="1"/><label for="q3-1" title="1 ดาว">★</label>
+              </div>
+            </div>
+
+            <!-- ข้อ 4 -->
+            <div class="question-box mb-1">
+              <label class="fw-bold d-block mb-2">4. การดูแลและความปลอดภัยของพี่ๆ ทีมงาน 🛡️</label>
+              <div class="star-rating">
+                <input type="radio" id="q4-5" name="q4" value="5" required/><label for="q4-5" title="5 ดาว">★</label>
+                <input type="radio" id="q4-4" name="q4" value="4"/><label for="q4-4" title="4 ดาว">★</label>
+                <input type="radio" id="q4-3" name="q4" value="3"/><label for="q4-3" title="3 ดาว">★</label>
+                <input type="radio" id="q4-2" name="q4" value="2"/><label for="q4-2" title="2 ดาว">★</label>
+                <input type="radio" id="q4-1" name="q4" value="1"/><label for="q4-1" title="1 ดาว">★</label>
+              </div>
+            </div>
+
           </div>
 
-          <button type="submit" id="submitBtn" class="btn btn-primary w-100 btn-lg">ส่งแบบประเมิน</button>
+          <!-- ส่วนที่ 3: ข้อเสนอแนะ -->
+          <div class="form-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-primary">💬 ส่วนที่ 3: ข้อเสนอแนะเพิ่มเติม</h5>
+            <textarea class="form-control" name="suggestions" rows="3" style="border-radius: 14px;" placeholder="อยากให้ปรับปรุงอะไร หรือชอบการทดลองไหนเป็นพิเศษ พิมพ์บอกตรงนี้ได้เลยนะ..."></textarea>
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn btn-primary btn-submit w-100 text-white">ส่งแบบประเมิน 🚀</button>
         </form>
+
       </div>
     </div>
   </div>
 
+  <!-- Modal ป๊อปอัปใส่รหัสผ่าน -->
+  <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content" style="border-radius: 20px;">
+        <div class="modal-header border-0 pb-0">
+          <h6 class="modal-title fw-bold text-primary">🔒 กรอกรหัสผ่าน 4 หลัก</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center pt-3">
+          <p class="text-muted small mb-3">เฉพาะผู้ดูแลระบบเท่านั้น</p>
+          <input type="password" id="pinInput" class="form-control text-center fs-4 fw-bold" maxlength="4" placeholder="••••" style="letter-spacing: 0.5rem; border-radius: 12px;">
+          <div id="pinError" class="text-danger small mt-2 d-none">❌ รหัสผ่านไม่ถูกต้อง!</div>
+          <button type="button" onclick="verifyPin()" class="btn btn-primary w-100 mt-3" style="border-radius: 12px;">ตกลง</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // *** วาง URL ของ Google Apps Script Web App ตรงนี้ ***
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywTgQhe536Q0R-aBX-E_w06WT9Xz2cpOOQtRjfXAj2f8HQZId_u7mvtEWIIyxy756-/exec";
+    // *** เปลี่ยนเป็น Web App URL ของคุณ ***
+    const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
 
     document.getElementById('evalForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -131,16 +287,35 @@
         body: JSON.stringify(data)
       })
       .then(() => {
-        alert('บันทึกข้อมูลเรียบร้อยแล้ว ขอบคุณสำหรับความร่วมมือ!');
+        alert('บันทึกข้อมูลเรียบร้อยแล้ว ขอบคุณมากครับ! 🎉');
         this.reset();
         btn.disabled = false;
-        btn.innerText = "ส่งแบบประเมิน";
+        btn.innerText = "ส่งแบบประเมิน 🚀";
       })
       .catch(err => {
-        alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+        alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
         btn.disabled = false;
-        btn.innerText = "ส่งแบบประเมิน";
+        btn.innerText = "ส่งแบบประเมิน 🚀";
       });
+    });
+
+    // ฟังก์ชันตรวจสอบ PIN 0145
+    function verifyPin() {
+      const pin = document.getElementById('pinInput').value;
+      const errorDiv = document.getElementById('pinError');
+      
+      if (pin === "0145") {
+        sessionStorage.setItem("dashboard_access", "granted");
+        window.location.href = "dashboard.html";
+      } else {
+        errorDiv.classList.remove('d-none');
+        document.getElementById('pinInput').value = "";
+        document.getElementById('pinInput').focus();
+      }
+    }
+
+    document.getElementById('pinInput').addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') verifyPin();
     });
   </script>
 </body>
