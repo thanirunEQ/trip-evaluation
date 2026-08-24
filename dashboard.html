@@ -21,16 +21,16 @@
     }
 
     .analysis-box {
-      background-color: #f8fafc;
-      border-left: 4px solid #2563eb;
-      border-radius: 8px;
+      background-color: #eff6ff;
+      border-left: 5px solid #2563eb;
+      border-radius: 12px;
       padding: 1.25rem;
     }
 
     @media print {
       body { 
         background-color: #ffffff !important; 
-        font-size: 14px;
+        font-size: 13px;
       }
       .no-print { 
         display: none !important; 
@@ -42,21 +42,21 @@
         margin: 0 !important; 
       }
       .card { 
-        border: none !important; 
+        border: 1px solid #ddd !important; 
         box-shadow: none !important; 
-        padding: 0 !important;
-        margin-bottom: 20px !important;
+        padding: 15px !important;
+        margin-bottom: 15px !important;
       }
       .page-break-before {
         page-break-before: always !important;
         break-before: page !important;
-        padding-top: 20px !important;
+        padding-top: 10px !important;
       }
       table {
         page-break-inside: avoid;
       }
       .chart-container {
-        max-width: 450px !important;
+        max-width: 380px !important;
         margin: 0 auto !important;
       }
     }
@@ -70,76 +70,69 @@
       <button onclick="window.print()" class="btn btn-primary btn-lg">🖨️ พิมพ์ / บันทึกรายงานสรุปผล (PDF)</button>
     </div>
 
-    <!-- แผ่นที่ 1: สรุปภาพรวม และ สถิติคะแนน -->
-    <div id="page1">
-      <div class="card p-4 mb-4 text-center">
-        <h3 class="fw-bold mb-2">รายงานสรุปผลการประเมินความพึงพอใจกิจกรรมทัศนศึกษา</h3>
-        <p class="text-muted mb-0">จำนวนผู้ตอบแบบสอบถามทั้งหมด: <span id="totalResp" class="fw-bold text-primary">0</span> คน</p>
-      </div>
+    <!-- ส่วนที่ 1: หัวข้อและกราฟ -->
+    <div class="card p-4 mb-4 text-center">
+      <h3 class="fw-bold mb-2">รายงานสรุปผลการประเมินความพึงพอใจกิจกรรมทัศนศึกษา</h3>
+      <p class="text-muted mb-0">จำนวนผู้ตอบแบบสอบถามทั้งหมด: <span id="totalResp" class="fw-bold text-primary">0</span> คน</p>
+    </div>
 
-      <!-- Charts Section -->
-      <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-          <div class="card p-3 h-100">
-            <h6 class="fw-bold text-center mb-3">สัดส่วนผู้ตอบจำแนกตามเพศ</h6>
-            <div class="chart-container" style="position: relative; height: 220px;">
-              <canvas id="genderChart"></canvas>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 mb-3">
-          <div class="card p-3 h-100">
-            <h6 class="fw-bold text-center mb-3">สัดส่วนผู้ตอบจำแนกตามช่วงอายุ</h6>
-            <div class="chart-container" style="position: relative; height: 220px;">
-              <canvas id="ageChart"></canvas>
-            </div>
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card p-3 h-100">
+          <h6 class="fw-bold text-center mb-3">สัดส่วนผู้ตอบจำแนกตามเพศ</h6>
+          <div class="chart-container" style="position: relative; height: 200px;">
+            <canvas id="genderChart"></canvas>
           </div>
         </div>
       </div>
-
-      <!-- Table Section -->
-      <div class="card p-4 mb-4">
-        <h5 class="fw-bold mb-3">ตารางสรุปค่าเฉลี่ย (X̄) และส่วนเบี่ยงเบนมาตรฐาน (S.D.)</h5>
-        <table class="table table-bordered align-middle">
-          <thead class="table-light text-center">
-            <tr>
-              <th style="text-align: left;">รายการประเมิน</th>
-              <th style="width: 18%;">ค่าเฉลี่ย (X̄)</th>
-              <th style="width: 22%;">ส่วนเบี่ยงเบนมาตรฐาน (S.D.)</th>
-              <th style="width: 20%;">ระดับความพึงพอใจ</th>
-            </tr>
-          </thead>
-          <tbody id="statsTable">
-            <tr>
-              <td colspan="4" class="text-center text-muted">กำลังโหลดข้อมูล...</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="col-md-6 mb-3">
+        <div class="card p-3 h-100">
+          <h6 class="fw-bold text-center mb-3">สัดส่วนผู้ตอบจำแนกตามช่วงอายุ</h6>
+          <div class="chart-container" style="position: relative; height: 200px;">
+            <canvas id="ageChart"></canvas>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- แผ่นที่ 2: ข้อเสนอแนะเพิ่มเติม -->
-    <div id="page2" class="page-break-before">
-      <div class="card p-4 mb-4">
-        <h5 class="fw-bold mb-3 border-bottom pb-2">ข้อเสนอแนะเพิ่มเติมจากผู้เข้าร่วม</h5>
-        <ul id="suggestionList" class="list-group list-group-flush">
-          <li class="list-group-item text-muted">กำลังโหลดข้อมูล...</li>
-        </ul>
+    <!-- ส่วนที่ 2: ตารางสรุปค่าเฉลี่ย -->
+    <div class="card p-4 mb-4">
+      <h5 class="fw-bold mb-3">ตารางสรุปค่าเฉลี่ย (X̄) และส่วนเบี่ยงเบนมาตรฐาน (S.D.)</h5>
+      <table class="table table-bordered align-middle mb-0">
+        <thead class="table-light text-center">
+          <tr>
+            <th style="text-align: left;">รายการประเมิน</th>
+            <th style="width: 15%;">ค่าเฉลี่ย (X̄)</th>
+            <th style="width: 22%;">ส่วนเบี่ยงเบนมาตรฐาน (S.D.)</th>
+            <th style="width: 20%;">ระดับความพึงพอใจ</th>
+          </tr>
+        </thead>
+        <tbody id="statsTable">
+          <tr>
+            <td colspan="4" class="text-center text-muted">กำลังโหลดข้อมูล...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ส่วนที่ 3: สรุปผลและบทวิเคราะห์อัจฉริยะ (ย้ายมาไว้นี่แล้ว) -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+        <h5 class="fw-bold mb-0 text-primary">🤖 สรุปผลและบทวิเคราะห์ภาพรวม (Auto-Generated Summary)</h5>
+        <span class="badge bg-primary no-print">AI Analytics</span>
+      </div>
+      
+      <div id="aiSummaryContent">
+        <p class="text-muted">กำลังประมวลผลบทวิเคราะห์สรุป...</p>
       </div>
     </div>
 
-    <!-- แผ่นที่ 3: บทวิเคราะห์และสรุปผลอัจฉริยะ (เพิ่มใหม่) -->
-    <div id="page3" class="page-break-before">
-      <div class="card p-4">
-        <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
-          <h5 class="fw-bold mb-0 text-primary">🤖 สรุปผลและบทวิเคราะห์ภาพรวม (Auto-Generated Summary)</h5>
-          <span class="badge bg-primary no-print">AI Analytics</span>
-        </div>
-        
-        <div id="aiSummaryContent">
-          <p class="text-muted">กำลังประมวลผลบทวิเคราะห์สรุป...</p>
-        </div>
-      </div>
+    <!-- ส่วนที่ 4: ข้อเสนอแนะเพิ่มเติม -->
+    <div class="card p-4 mb-4 page-break-before">
+      <h5 class="fw-bold mb-3 border-bottom pb-2">ข้อเสนอแนะเพิ่มเติมจากผู้เข้าร่วม</h5>
+      <ul id="suggestionList" class="list-group list-group-flush">
+        <li class="list-group-item text-muted">กำลังโหลดข้อมูล...</li>
+      </ul>
     </div>
 
   </div>
@@ -227,7 +220,7 @@
         
         let totalSum = 0;
         let validCount = 0;
-        let highest = { title: '', mean: 0 };
+        let highest = { title: '', mean: -1 };
         let lowest = { title: '', mean: 6 };
 
         questions.forEach(q => {
@@ -267,41 +260,41 @@
         const overallLevel = getLevelText(Number(overallMean));
         
         const summaryHtml = `
-          <div class="analysis-box mb-4">
+          <div class="analysis-box mb-3">
             <h6 class="fw-bold text-dark mb-2">📌 สรุปภาพรวมการจัดการกิจกรรม</h6>
             <p class="mb-0 text-secondary">
-              จากการรวบรวมแบบประเมินผู้เข้าร่วมกิจกรรมทั้งหมด <strong>${data.total} คน</strong> พบว่า ความพึงพอใจในภาพรวมของกิจกรรมทัศนศึกษาอยู่ในระดับ 
+              จากการประเมินผู้เข้าร่วมกิจกรรมทั้งหมด <strong>${data.total} คน</strong> พบว่าภาพรวมความพึงพอใจต่อกิจกรรมทัศนศึกษาอยู่ในระดับ 
               <span class="badge bg-primary fs-6">${overallLevel}</span> โดยมีค่าเฉลี่ยรวมอยู่ที่ <strong>${overallMean}</strong> คะแนน
             </p>
           </div>
 
           <div class="row mb-3">
-            <div class="col-md-6 mb-3">
-              <div class="p-3 border rounded-3 bg-light">
+            <div class="col-md-6 mb-2">
+              <div class="p-3 border rounded-3 bg-light h-100">
                 <span class="text-success fw-bold d-block mb-1">🌟 จุดเด่นที่สุดของกิจกรรม</span>
-                <p class="mb-0 text-dark">
-                  ข้อที่ได้รับคะแนนความพึงพอใจสูงที่สุด คือ <strong>"${highest.title}"</strong> 
-                  มีค่าเฉลี่ยเท่ากับ <strong>${highest.mean.toFixed(2)}</strong> คะแนน (ระดับ${getLevelText(highest.mean)})
+                <p class="mb-0 text-dark small">
+                  <strong>${highest.title}</strong><br>
+                  ค่าเฉลี่ย <strong>${highest.mean.toFixed(2)}</strong> คะแนน (ระดับ${getLevelText(highest.mean)})
                 </p>
               </div>
             </div>
-            <div class="col-md-6 mb-3">
-              <div class="p-3 border rounded-3 bg-light">
+            <div class="col-md-6 mb-2">
+              <div class="p-3 border rounded-3 bg-light h-100">
                 <span class="text-warning text-dark fw-bold d-block mb-1">💡 ประเด็นที่ควรพัฒนาต่อ</span>
-                <p class="mb-0 text-dark">
-                  ข้อที่ได้รับคะแนนน้อยที่สุด (แต่ยังอยู่ในเกณฑ์เกณฑ์ที่ยอมรับได้) คือ <strong>"${lowest.title}"</strong> 
-                  มีค่าเฉลี่ยเท่ากับ <strong>${lowest.mean.toFixed(2)}</strong> คะแนน (ระดับ${getLevelText(lowest.mean)})
+                <p class="mb-0 text-dark small">
+                  <strong>${lowest.title}</strong><br>
+                  ค่าเฉลี่ย <strong>${lowest.mean.toFixed(2)}</strong> คะแนน (ระดับ${getLevelText(lowest.mean)})
                 </p>
               </div>
             </div>
           </div>
 
           <div class="p-3 border rounded-3 bg-white">
-            <h6 class="fw-bold mb-2">📋 ข้อเสนอแนะเชิงนโยบายเพื่อการปรับปรุงครั้งถัดไป</h6>
-            <ul class="mb-0 ps-3 text-secondary">
-              <li>รักษามาตรฐานในจุดเด่นด้าน <strong>${highest.title.split('. ')[1]}</strong> เพื่อใช้เป็นจุดขายของกิจกรรมในครั้งต่อไป</li>
-              <li>นำประเด็นด้าน <strong>${lowest.title.split('. ')[1]}</strong> มาทบทวนและวางแผนล่วงหน้า เพื่อเพิ่มความราบรื่นในการจัดงานครั้งหน้า</li>
-              <li>นำข้อเสนอแนะปลายเปิดจากนักเรียนจำนวน <strong>${data.suggestions ? data.suggestions.length : 0} รายการ</strong> ไปใช้ปรับรายละเอียดกิจกรรมรายย่อยให้ตรงความสนใจของนักเรียนยิ่งขึ้น</li>
+            <h6 class="fw-bold mb-2 small">📋 ข้อเสนอแนะเชิงนโยบายเพื่อการปรับปรุงครั้งถัดไป</h6>
+            <ul class="mb-0 ps-3 text-secondary small">
+              <li>รักษามาตรฐานจุดแข็งในเรื่อง <strong>${highest.title.split('. ')[1]}</strong> เพื่อใช้เป็นรูปแบบหลักในการจัดกิจกรรมครั้งต่อไป</li>
+              <li>นำประเด็นด้าน <strong>${lowest.title.split('. ')[1]}</strong> ไปทบทวนด้านระยะเวลาและการเดินทางล่วงหน้า เพื่อลดความอ่อนล้าของผู้เข้าร่วม</li>
+              <li>พิจารณาข้อเสนอแนะเชิงคุณภาพจากนักเรียนเพื่อนำไปปรับช่วงเวลาเดินทางและจุดพักให้เหมาะสมยิ่งขึ้น</li>
             </ul>
           </div>
         `;
