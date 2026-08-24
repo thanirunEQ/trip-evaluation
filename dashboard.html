@@ -20,6 +20,13 @@
       border-radius: 16px;
     }
 
+    .analysis-box {
+      background-color: #f8fafc;
+      border-left: 4px solid #2563eb;
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
     @media print {
       body { 
         background-color: #ffffff !important; 
@@ -57,7 +64,7 @@
 </head>
 <body>
   <div class="container py-4">
-    <!-- แถบปุ่มควบคุม (ซ่อนเวลาพิมพ์) -->
+    <!-- แถบปุ่มควบคุม -->
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
       <a href="index.html" class="btn btn-outline-secondary">← กลับหน้าแบบสอบถาม</a>
       <button onclick="window.print()" class="btn btn-primary btn-lg">🖨️ พิมพ์ / บันทึกรายงานสรุปผล (PDF)</button>
@@ -113,31 +120,54 @@
 
     <!-- แผ่นที่ 2: ข้อเสนอแนะเพิ่มเติม -->
     <div id="page2" class="page-break-before">
-      <div class="card p-4">
-        <h5 class="fw-bold mb-3 border-bottom pb-2">ข้อเสนอแนะเพิ่มเติม</h5>
+      <div class="card p-4 mb-4">
+        <h5 class="fw-bold mb-3 border-bottom pb-2">ข้อเสนอแนะเพิ่มเติมจากผู้เข้าร่วม</h5>
         <ul id="suggestionList" class="list-group list-group-flush">
           <li class="list-group-item text-muted">กำลังโหลดข้อมูล...</li>
         </ul>
       </div>
     </div>
+
+    <!-- แผ่นที่ 3: บทวิเคราะห์และสรุปผลอัจฉริยะ (เพิ่มใหม่) -->
+    <div id="page3" class="page-break-before">
+      <div class="card p-4">
+        <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+          <h5 class="fw-bold mb-0 text-primary">🤖 สรุปผลและบทวิเคราะห์ภาพรวม (Auto-Generated Summary)</h5>
+          <span class="badge bg-primary no-print">AI Analytics</span>
+        </div>
+        
+        <div id="aiSummaryContent">
+          <p class="text-muted">กำลังประมวลผลบทวิเคราะห์สรุป...</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // ระบบป้องกันการแอบพิมพ์ URL เข้าตรงๆ
     if (sessionStorage.getItem("dashboard_access") !== "granted") {
       alert("🔒 กรุณาใส่รหัสผ่านเพื่อเข้าใช้งานหน้า Dashboard");
       window.location.href = "index.html";
     }
 
     // *** เปลี่ยนเป็น Web App URL ของคุณ ***
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyryww2EZK4DIFDyh1qeoRcwS2xDMRcAWStrXlCWAaSDq3BeZAtKpqIE8JlOT8cmgRI/exec";
+    const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
 
-    function getLevel(mean) {
-      if (mean >= 4.50) return '<span class="badge bg-success">มากที่สุด</span>';
-      if (mean >= 3.50) return '<span class="badge bg-primary">มาก</span>';
-      if (mean >= 2.50) return '<span class="badge bg-warning text-dark">ปานกลาง</span>';
-      if (mean >= 1.50) return '<span class="badge bg-danger">น้อย</span>';
-      return '<span class="badge bg-dark">น้อยที่สุด</span>';
+    function getLevelText(mean) {
+      if (mean >= 4.50) return 'มากที่สุด';
+      if (mean >= 3.50) return 'มาก';
+      if (mean >= 2.50) return 'ปานกลาง';
+      if (mean >= 1.50) return 'น้อย';
+      return 'น้อยที่สุด';
+    }
+
+    function getLevelBadge(mean) {
+      const text = getLevelText(mean);
+      if (mean >= 4.50) return `<span class="badge bg-success">${text}</span>`;
+      if (mean >= 3.50) return `<span class="badge bg-primary">${text}</span>`;
+      if (mean >= 2.50) return `<span class="badge bg-warning text-dark">${text}</span>`;
+      if (mean >= 1.50) return `<span class="badge bg-danger">${text}</span>`;
+      return `<span class="badge bg-dark">${text}</span>`;
     }
 
     fetch(WEB_APP_URL)
@@ -146,6 +176,7 @@
         if (!data || data.count === 0) {
           document.getElementById('statsTable').innerHTML = '<tr><td colspan="4" class="text-center text-muted">ยังไม่มีข้อมูลการตอบกลับ</td></tr>';
           document.getElementById('suggestionList').innerHTML = '<li class="list-group-item text-muted">ยังไม่มีข้อเสนอแนะ</li>';
+          document.getElementById('aiSummaryContent').innerHTML = '<p class="text-muted">ไม่สามารถสร้างบทวิเคราะห์ได้เนื่องจากยังไม่มีข้อมูล</p>';
           return;
         }
 
@@ -182,7 +213,7 @@
           }
         });
 
-        // Stats Table (เพิ่มข้อ 5)
+        // Stats Table
         const questions = [
           { key: 'q1', title: '1. ความเหมาะสมของสถานที่และระยะเวลา' },
           { key: 'q2', title: '2. ความรู้และประโยชน์ที่ได้รับจากกิจกรรม' },
@@ -193,14 +224,29 @@
 
         const tbody = document.getElementById('statsTable');
         tbody.innerHTML = '';
+        
+        let totalSum = 0;
+        let validCount = 0;
+        let highest = { title: '', mean: 0 };
+        let lowest = { title: '', mean: 6 };
+
         questions.forEach(q => {
           const stat = data.stats[q.key] || { mean: '0.00', sd: '0.00' };
+          const m = Number(stat.mean);
+          
+          if (m > 0) {
+            totalSum += m;
+            validCount++;
+            if (m > highest.mean) highest = { title: q.title, mean: m };
+            if (m < lowest.mean) lowest = { title: q.title, mean: m };
+          }
+
           tbody.innerHTML += `
             <tr>
               <td>${q.title}</td>
               <td class="text-center fw-bold">${stat.mean}</td>
               <td class="text-center">${stat.sd}</td>
-              <td class="text-center">${getLevel(Number(stat.mean))}</td>
+              <td class="text-center">${getLevelBadge(m)}</td>
             </tr>
           `;
         });
@@ -215,6 +261,53 @@
             sugList.innerHTML += `<li class="list-group-item py-2">• ${s}</li>`;
           });
         }
+
+        // --- ระบบสร้างบทวิเคราะห์อัตโนมัติ (Automated AI Summary) ---
+        const overallMean = validCount > 0 ? (totalSum / validCount).toFixed(2) : "0.00";
+        const overallLevel = getLevelText(Number(overallMean));
+        
+        const summaryHtml = `
+          <div class="analysis-box mb-4">
+            <h6 class="fw-bold text-dark mb-2">📌 สรุปภาพรวมการจัดการกิจกรรม</h6>
+            <p class="mb-0 text-secondary">
+              จากการรวบรวมแบบประเมินผู้เข้าร่วมกิจกรรมทั้งหมด <strong>${data.total} คน</strong> พบว่า ความพึงพอใจในภาพรวมของกิจกรรมทัศนศึกษาอยู่ในระดับ 
+              <span class="badge bg-primary fs-6">${overallLevel}</span> โดยมีค่าเฉลี่ยรวมอยู่ที่ <strong>${overallMean}</strong> คะแนน
+            </p>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+              <div class="p-3 border rounded-3 bg-light">
+                <span class="text-success fw-bold d-block mb-1">🌟 จุดเด่นที่สุดของกิจกรรม</span>
+                <p class="mb-0 text-dark">
+                  ข้อที่ได้รับคะแนนความพึงพอใจสูงที่สุด คือ <strong>"${highest.title}"</strong> 
+                  มีค่าเฉลี่ยเท่ากับ <strong>${highest.mean.toFixed(2)}</strong> คะแนน (ระดับ${getLevelText(highest.mean)})
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="p-3 border rounded-3 bg-light">
+                <span class="text-warning text-dark fw-bold d-block mb-1">💡 ประเด็นที่ควรพัฒนาต่อ</span>
+                <p class="mb-0 text-dark">
+                  ข้อที่ได้รับคะแนนน้อยที่สุด (แต่ยังอยู่ในเกณฑ์เกณฑ์ที่ยอมรับได้) คือ <strong>"${lowest.title}"</strong> 
+                  มีค่าเฉลี่ยเท่ากับ <strong>${lowest.mean.toFixed(2)}</strong> คะแนน (ระดับ${getLevelText(lowest.mean)})
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 border rounded-3 bg-white">
+            <h6 class="fw-bold mb-2">📋 ข้อเสนอแนะเชิงนโยบายเพื่อการปรับปรุงครั้งถัดไป</h6>
+            <ul class="mb-0 ps-3 text-secondary">
+              <li>รักษามาตรฐานในจุดเด่นด้าน <strong>${highest.title.split('. ')[1]}</strong> เพื่อใช้เป็นจุดขายของกิจกรรมในครั้งต่อไป</li>
+              <li>นำประเด็นด้าน <strong>${lowest.title.split('. ')[1]}</strong> มาทบทวนและวางแผนล่วงหน้า เพื่อเพิ่มความราบรื่นในการจัดงานครั้งหน้า</li>
+              <li>นำข้อเสนอแนะปลายเปิดจากนักเรียนจำนวน <strong>${data.suggestions ? data.suggestions.length : 0} รายการ</strong> ไปใช้ปรับรายละเอียดกิจกรรมรายย่อยให้ตรงความสนใจของนักเรียนยิ่งขึ้น</li>
+            </ul>
+          </div>
+        `;
+
+        document.getElementById('aiSummaryContent').innerHTML = summaryHtml;
+
       })
       .catch(err => {
         console.error(err);
