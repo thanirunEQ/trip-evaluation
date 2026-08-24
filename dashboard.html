@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard สรุปผลการประเมินทัศนศึกษา</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background-color: #f4f6f9; font-family: 'Sarabun', sans-serif; }
+    @media print {
+      .no-print { display: none !important; }
+      .card { border: none !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4" id="reportArea">
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+      <a href="index.html" class="btn btn-outline-secondary">← กลับหน้าแบบสอบถาม</a>
+      <button onclick="window.print()" class="btn btn-success">🖨️ พิมพ์รายงานสรุปผล (PDF)</button>
+    </div>
+
+    <div class="card p-4 mb-4">
+      <h3 class="fw-bold text-center mb-1">รายงานสรุปผลการประเมินความพึงพอใจกิจกรรมทัศนศึกษา</h3>
+      <p class="text-center text-muted mb-0">จำนวนผู้ตอบแบบสอบถามทั้งหมด: <span id="totalResp" class="fw-bold text-primary">0</span> คน</p>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card p-3">
+          <h5 class="fw-bold text-center">สัดส่วนผู้ตอบจำแนกตามเพศ</h5>
+          <canvas id="genderChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card p-3">
+          <h5 class="fw-bold text-center">สัดส่วนผู้ตอบจำแนกตามช่วงอายุ</h5>
+          <canvas id="ageChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Stats -->
+    <div class="card p-4 mb-4">
+      <h5 class="fw-bold mb-3">สรุปค่าเฉลี่ย ($\bar{X}$) และส่วนเบี่ยงเบนมาตรฐาน ($S.D.$)</h5>
+      <table class="table table-striped table-bordered align-middle">
+        <thead class="table-dark text-center">
+          <tr>
+            <th>รายการประเมิน</th>
+            <th style="width: 15%;">ค่าเฉลี่ย ($\bar{X}$)</th>
+            <th style="width: 15%;">ส่วนเบี่ยงเบนมาตรฐาน ($S.D.$)</th>
+            <th style="width: 20%;">ระดับความพึงพอใจ</th>
+          </tr>
+        </thead>
+        <tbody id="statsTable">
+          <!-- Data populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="card p-4">
+      <h5 class="fw-bold mb-3">ข้อเสนอแนะเพิ่มเติม</h5>
+      <ul id="suggestionList" class="list-group list-group-flush">
+        <li class="list-group-item text-muted">กำลังโหลดข้อมูล...</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // *** วาง URL ของ Google Apps Script Web App ตรงนี้ ***
+    const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+
+    function getLevel(mean) {
+      if (mean >= 4.50) return '<span class="badge bg-success">มากที่สุด</span>';
+      if (mean >= 3.50) return '<span class="badge bg-primary">มาก</span>';
+      if (mean >= 2.50) return '<span class="badge bg-warning text-dark">ปานกลาง</span>';
+      if (mean >= 1.50) return '<span class="badge bg-danger">น้อย</span>';
+      return '<span class="badge bg-dark">น้อยที่สุด</span>';
+    }
+
+    fetch(WEB_APP_URL)
+      .then(res => res.json())
+      .then(data => {
+        if (data.count === 0) {
+          alert('ยังไม่มีข้อมูลผู้ตอบแบบสอบถาม');
+          return;
+        }
+
+        document.getElementById('totalResp').innerText = data.total;
+
+        // Gender Chart
+        new Chart(document.getElementById('genderChart'), {
+          type: 'pie',
+          data: {
+            labels: Object.keys(data.demographics.gender),
+            datasets: [{ data: Object.values(data.demographics.gender), backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'] }]
+          }
+        });
+
+        // Age Chart
+        new Chart(document.getElementById('ageChart'), {
+          type: 'bar',
+          data: {
+            labels: Object.keys(data.demographics.age),
+            datasets: [{ label: 'จำนวน (คน)', data: Object.values(data.demographics.age), backgroundColor: '#4BC0C0' }]
+          },
+          options: { plugins: { legend: { display: false } } }
+        });
+
+        // Stats Table
+        const questions = [
+          { key: 'q1', title: '1. ความเหมาะสมของสถานที่และระยะเวลา' },
+          { key: 'q2', title: '2. ความรู้และประโยชน์ที่ได้รับจากกิจกรรม' },
+          { key: 'q3', title: '3. อาหาร เครื่องดื่ม และสิ่งอำนวยความสะดวก' },
+          { key: 'q4', title: '4. การดูแลและความปลอดภัยของทีมงาน' }
+        ];
+
+        const tbody = document.getElementById('statsTable');
+        tbody.innerHTML = '';
+        questions.forEach(q => {
+          const stat = data.stats[q.key];
+          tbody.innerHTML += `
+            <tr>
+              <td>${q.title}</td>
+              <td class="text-center fw-bold">${stat.mean}</td>
+              <td class="text-center">${stat.sd}</td>
+              <td class="text-center">${getLevel(Number(stat.mean))}</td>
+            </tr>
+          `;
+        });
+
+        // Suggestions
+        const sugList = document.getElementById('suggestionList');
+        sugList.innerHTML = '';
+        if (data.suggestions.length === 0) {
+          sugList.innerHTML = '<li class="list-group-item text-muted">ไม่มีข้อเสนอแนะเพิ่มเติม</li>';
+        } else {
+          data.suggestions.forEach(s => {
+            sugList.innerHTML += `<li class="list-group-item">• ${s}</li>`;
+          });
+        }
+      });
+  </script>
+</body>
+</html>
