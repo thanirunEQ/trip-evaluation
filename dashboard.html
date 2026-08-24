@@ -111,7 +111,7 @@
       </div>
     </div>
 
-    <!-- แผ่นที่ 2: ข้อเสนอแนะเพิ่มเติม (ขึ้นแผ่นใหม่เวลาพิมพ์) -->
+    <!-- แผ่นที่ 2: ข้อเสนอแนะเพิ่มเติม -->
     <div id="page2" class="page-break-before">
       <div class="card p-4">
         <h5 class="fw-bold mb-3 border-bottom pb-2">ข้อเสนอแนะเพิ่มเติม</h5>
@@ -130,7 +130,7 @@
     }
 
     // *** เปลี่ยนเป็น Web App URL ของคุณ ***
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywTgQhe536Q0R-aBX-E_w06WT9Xz2cpOOQtRjfXAj2f8HQZId_u7mvtEWIIyxy756-/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyryww2EZK4DIFDyh1qeoRcwS2xDMRcAWStrXlCWAaSDq3BeZAtKpqIE8JlOT8cmgRI/exec";
 
     function getLevel(mean) {
       if (mean >= 4.50) return '<span class="badge bg-success">มากที่สุด</span>';
@@ -182,18 +182,19 @@
           }
         });
 
-        // Stats Table
+        // Stats Table (เพิ่มข้อ 5)
         const questions = [
           { key: 'q1', title: '1. ความเหมาะสมของสถานที่และระยะเวลา' },
           { key: 'q2', title: '2. ความรู้และประโยชน์ที่ได้รับจากกิจกรรม' },
           { key: 'q3', title: '3. อาหาร เครื่องดื่ม และสิ่งอำนวยความสะดวก' },
-          { key: 'q4', title: '4. การดูแลและความปลอดภัยของทีมงาน' }
+          { key: 'q4', title: '4. การดูแลและความปลอดภัยของทีมงาน' },
+          { key: 'q5', title: '5. ภาพรวมความประทับใจและความพึงพอใจในกิจกรรม' }
         ];
 
         const tbody = document.getElementById('statsTable');
         tbody.innerHTML = '';
         questions.forEach(q => {
-          const stat = data.stats[q.key];
+          const stat = data.stats[q.key] || { mean: '0.00', sd: '0.00' };
           tbody.innerHTML += `
             <tr>
               <td>${q.title}</td>
